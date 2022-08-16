@@ -12,7 +12,8 @@ public class SwiftFlutterFacebookAppLinksPlugin: NSObject, FlutterPlugin {
 
     // Get user consent
     print("FB APP LINK registering plugin")
-    instance.initializeSDK()
+    // late init
+    // instance.initializeSDK()
     
     registrar.addMethodCallDelegate(instance, channel: channel)
   }
@@ -40,8 +41,11 @@ public class SwiftFlutterFacebookAppLinksPlugin: NSObject, FlutterPlugin {
   }
 
   private func handleFBAppLinks(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+    initializeSDK()
+    if #available(iOS 14, *) {
+        Settings.shared.isAdvertiserTrackingEnabled = true
+    }
     print("FB APP LINKS Starting ")
-
     AppLinkUtility.fetchDeferredAppLink { (url, error) in
         if let error = error {
           print("Received error while fetching deferred app link %@", error)
@@ -75,9 +79,8 @@ public class SwiftFlutterFacebookAppLinksPlugin: NSObject, FlutterPlugin {
   }
 
   public func initializeSDK() {
-      ApplicationDelegate.initializeSDK(nil)
+      ApplicationDelegate.shared.initializeSDK()
   }
-
   
 }
 
